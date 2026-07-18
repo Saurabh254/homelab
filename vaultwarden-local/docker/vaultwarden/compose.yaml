@@ -1,0 +1,33 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+
+    restart: unless-stopped
+    init: true
+
+    env_file:
+      - .env
+
+    ports:
+      - "127.0.0.1:8080:80"
+
+    volumes:
+      - /mnt/vaultdisk/vaultwarden:/data
+
+    networks:
+      - vault-network
+
+    mem_limit: 512m
+    pids_limit: 100
+
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+networks:
+  vault-network:
+    external: true

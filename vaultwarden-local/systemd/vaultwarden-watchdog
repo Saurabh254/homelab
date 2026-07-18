@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+COMPOSE_DIR="/home/saurabh254/homelab/vaultwarden"
+MOUNT="/mnt/vaultdisk"
+
+cd "$COMPOSE_DIR"
+
+if mountpoint -q "$MOUNT"; then
+    if ! docker compose ps --status running | grep -q vaultwarden; then
+        logger -t vaultwarden-watchdog "Mount detected. Starting Vaultwarden."
+        docker compose start
+    fi
+else
+    if docker compose ps --status running | grep -q vaultwarden; then
+        logger -t vaultwarden-watchdog "Mount missing. Stopping Vaultwarden."
+        docker compose stop
+    fi
+fi
